@@ -1,21 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
     <title>Memory Game</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1 class="text-center my-4">Memory Game</h1>
-        <div id="game-board" class="row justify-content-center">
-            <!-- Card elements will go here -->
-        </div>
+      <h1 class="text-center my-4">Memory Game</h1>
+      <div id="game-board" class="row justify-content-center">
+        <button class="card" onclick="flipCard(this, 0)">?</button>
+        <button class="card" onclick="flipCard(this, 1)">?</button>
+        <button class="card" onclick="flipCard(this, 2)">?</button>
+        <button class="card" onclick="flipCard(this, 3)">?</button>
+      </div>
+      <div class="text-center">
+        <p id="message"></p>
+        <button class="btn btn-danger" onclick="restartGame()">Restart</button>
+      </div>
     </div>
     <script>
-        // Place script code here
+      // Array of symbols for the game
+      const symbols = ["🍎", "🍎", "🍌", "🍌"]
+      // Shuffle the symbols array
+      let shuffledSymbols = symbols.sort(() => 0.5 - Math.random())
+      // Array to keep track of flipped cards
+      let flippedCards = []
+      // Counter for matched pairs
+      let matchedPairs = 0
+
+      // Function to handle card flip
+      function flipCard(card) {
+        const index = Array.from(document.querySelectorAll(".card")).indexOf(
+          card
+        )
+        // Check if less than 2 cards are flipped and the card is not already flipped
+        if (flippedCards.length < 2 && !card.classList.contains("flipped")) {
+          // Show the symbol on the card
+          card.textContent = shuffledSymbols[index]
+          // Add 'flipped' class to the card
+          card.classList.add("flipped")
+          // Add the card to the flippedCards array
+          flippedCards.push(card)
+        }
+
+        // If two cards are flipped, check for a match
+        if (flippedCards.length === 2) {
+          setTimeout(checkMatch, 1000)
+        }
+      }
+
+      // Function to check if the flipped cards match
+      function checkMatch() {
+        let [card1, card2] = flippedCards
+        // If the symbols match, increment matchedPairs
+        if (card1.textContent === card2.textContent) {
+          matchedPairs++
+        } else {
+          // If not, hide the symbols and remove 'flipped' class
+          card1.textContent = "?"
+          card2.textContent = "?"
+          card1.classList.remove("flipped")
+          card2.classList.remove("flipped")
+        }
+        // Reset flippedCards array
+        flippedCards = []
+
+        // If all pairs are matched, display a message
+        if (matchedPairs === symbols.length / 2) {
+          document.getElementById("message").textContent =
+            "Congratulations! You matched all pairs!"
+        }
+      }
+
+      // Function to restart the game
+      function restartGame() {
+        // Reshuffle the symbols array
+        shuffledSymbols = symbols.sort(() => 0.5 - Math.random())
+        // Reset game variables
+        flippedCards = []
+        matchedPairs = 0
+        // Clear the message
+        document.getElementById("message").textContent = ""
+        // Reset all cards to initial state
+        document.querySelectorAll(".card").forEach((card) => {
+          card.textContent = "?"
+          card.classList.remove("flipped")
+        })
+      }
     </script>
-</body>
+  </body>
 </html>
