@@ -1,19 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
     <title>Memory Game</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1 class="text-center my-4">Memory Game</h1>
-        <div id="game-board" class="row justify-content-center">
-            <!-- Card elements will go here -->
-        </div>
+      <h1 class="text-center my-4">Memory Game</h1>
+      <div id="game-board" class="row justify-content-center"></div>
+      <div class="text-center mt-3">
+        <p id="message"></p>
+        <button class="btn btn-danger" onclick="restartGame()">Restart</button>
+      </div>
     </div>
-    <script src="script.js"></script>
-</body>
+
+    <script>
+      const symbols = ["🍎", "🍎", "🍌", "🍌", "🍉", "🍉", "🍇", "🍇"]
+      let shuffledSymbols = []
+      let flippedCards = []
+      let matchedPairs = 0
+
+      // Fisher-Yates Shuffle Algorithm
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1))
+          ;[array[i], array[j]] = [array[j], array[i]]
+        }
+      }
+
+      // Initialize Game
+      function setupGame() {
+        const gameBoard = document.getElementById("game-board")
+        gameBoard.innerHTML = "" // Clear board before adding new cards
+        shuffledSymbols = [...symbols]
+        shuffle(shuffledSymbols)
+        matchedPairs = 0
+        flippedCards = [] // Flipped cards array
+
+        // Dynamically create cards
+        shuffledSymbols.forEach((symbol, index) => {
+          const card = document.createElement("button")
+          card.classList.add("card")
+          card.textContent = "?"
+          card.setAttribute("data-index", index)
+          card.addEventListener("click", () => flipCard(card))
+          gameBoard.appendChild(card)
+        })
+      }
+
+      // Flip Card Logic
+      function flipCard(card) {
+        if (flippedCards.length < 2 && !card.classList.contains("flipped")) {
+          const index = card.getAttribute("data-index")
+          card.textContent = shuffledSymbols[index]
+          card.classList.add("flipped")
+          flippedCards.push(card)
+        }
+
+        if (flippedCards.length === 2) {
+          setTimeout(checkMatch, 800)
+        }
+      }
+
+      // Check for Match
+      function checkMatch() {
+        let [card1, card2] = flippedCards
+        // Check if cards match
+        if (card1.textContent === card2.textContent) {
+          matchedPairs++
+        } else {
+          // Flip cards back over if they don't match
+          card1.textContent = "?"
+          card2.textContent = "?"
+          card1.classList.remove("flipped")
+          card2.classList.remove("flipped")
+        }
+        flippedCards = []
+
+        // Check if all pairs are matched
+        if (matchedPairs === symbols.length / 2) {
+          document.getElementById("message").textContent =
+            "🎉 Congratulations! You won! 🎉"
+        }
+      }
+
+      // Restart Game
+      function restartGame() {
+        document.getElementById("message").textContent = ""
+        setupGame()
+      }
+
+      // Start Game
+      setupGame()
+    </script>
+  </body>
 </html>
