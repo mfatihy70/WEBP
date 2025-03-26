@@ -1,11 +1,9 @@
-// Task 3: Define Interfaces for PianoKey (2 Points)
 interface PianoKey {
-  key: string
-  note: string
+  key: string // Keyboard key (e.g., "A", "S")
+  note: string // Musical note (e.g., "C", "D")
   audio: string
 }
 
-// Select elements with proper type casting (Task 2: Add Type Annotations)
 const pianoContainer = document.getElementById("piano") as HTMLElement
 const noteLine = document.getElementById("note-line") as HTMLElement
 const playThemeBtn = document.getElementById(
@@ -13,7 +11,6 @@ const playThemeBtn = document.getElementById(
 ) as HTMLButtonElement
 const resetBtn = document.getElementById("reset-btn") as HTMLButtonElement
 
-// Task 2: Add Type Annotations for core game variables
 let pianoKeys: PianoKey[] = []
 let themeNotes: string[] = []
 let themeInterval: number | null = null
@@ -24,10 +21,15 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((response) => response.json())
     .then((data: PianoKey[]) => {
       pianoKeys = data
+
+      // Clear existing keys to prevent duplication
+      pianoContainer.innerHTML = ""
+
+      // Display only musical notes, not keyboard keys
       pianoKeys.forEach(({ key, note }) => {
         const keyElement = document.createElement("div")
         keyElement.classList.add("key")
-        keyElement.textContent = key
+        keyElement.textContent = note // Show note (C, D, E, etc.)
         keyElement.dataset.note = note
         keyElement.dataset.key = key
         pianoContainer.appendChild(keyElement)
@@ -40,12 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((response) => response.json())
     .then((data: string[]) => {
       themeNotes = data
+      console.log("Theme notes loaded:", themeNotes) // Add this line
     })
     .catch((error) => console.error("Error loading theme:", error))
 })
 
-// Play note function (modified to not use .find())
 function playNote(key: string): void {
+  // Find the PianoKey object that matches the key
   let keyObj: PianoKey | undefined
   for (let i = 0; i < pianoKeys.length; i++) {
     if (pianoKeys[i].key === key) {
@@ -53,11 +56,11 @@ function playNote(key: string): void {
       break
     }
   }
-
+  // Play the audio and highlight the key
   if (keyObj) {
     const audio = new Audio(keyObj.audio)
     audio.play().catch((error) => console.error("Audio playback error:", error))
-
+    // Highlight the key by adding a CSS class
     const keyElement = document.querySelector(
       `.key[data-key="${key}"]`
     ) as HTMLElement
@@ -70,36 +73,57 @@ function playNote(key: string): void {
   }
 }
 
-// Keyboard interaction
+// Keyboard interaction (plays note when pressing mapped key)
 document.addEventListener("keydown", (event: KeyboardEvent) => {
-  playNote(event.key.toUpperCase())
+  playNote(event.key.toUpperCase()) // Convert lowercase to uppercase
 })
 
-// Mouse interaction
-document.addEventListener("click", (event: MouseEvent) => {
+// Mouse interaction (plays note when clicking on a key)
+pianoContainer.addEventListener("click", (event: MouseEvent) => {
   const target = event.target as HTMLElement
   if (target.classList.contains("key")) {
     playNote(target.dataset.key as string)
   }
 })
 
-// Play theme button handler
+// Play theme button handler (plays the sequence of keyboard keys)
 playThemeBtn.addEventListener("click", () => {
-  if (themeNotes.length === 0) return
+  console.log("Play theme clicked")
+  console.log("Theme notes:", themeNotes)
+
+  if (themeNotes.length === 0) {
+    console.log("No theme notes loaded")
+    return
+  }
+
+  if (themeInterval) {
+    console.log("Clearing existing interval")
+    clearInterval(themeInterval)
+    themeInterval = null
+  }
 
   let index = 0
   themeInterval = window.setInterval(() => {
+    console.log(`Playing note ${index}: ${themeNotes[index]}`)
+
     if (index >= themeNotes.length) {
-      clearInterval(themeInterval as number)
-      noteLine.textContent = "Theme finished!"
+      console.log("Theme finished")
+      if (themeInterval) {
+        clearInterval(themeInterval)
+        themeInterval = null
+      }
+      if (noteLine) {
+        noteLine.textContent = "Theme finished!"
+      }
       return
     }
+
     playNote(themeNotes[index])
     index++
   }, 500)
 })
 
-// Reset button handler
+// Reset button handler (stops theme playback immediately)
 resetBtn.addEventListener("click", () => {
   if (themeInterval) {
     clearInterval(themeInterval)
