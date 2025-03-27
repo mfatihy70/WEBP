@@ -9,7 +9,7 @@ Each member of the team can earn **10 points**.
 
 ## **Tasks Assignments**
 
-### **Task 1: Questions Module (2 points)**
+### **Task 1: Questions Module (3 points)**
 **The Team** is responsible for implementing the **question bank**, ensuring that:
 - The module manages a structured **question bank** where each question is assigned a **category** and **difficulty level** (Easy, Medium, Hard).
 - A function distributes **exactly 5 questions per player**, ensuring an equal number of questions across all difficulty levels.
@@ -21,7 +21,7 @@ Each member of the team can earn **10 points**.
 - Calculate the player's **total score percentage** and **number of points** based on their performance.
 - Store and retrieve **player performance data**, allowing for individual tracking. Ensure scores are correctly formatted and displayed in the final results.
 
-### **Task 3: UI Module (2 points)**
+### **Task 3: UI Module (3 points)**
 **The Team** will create the **user interface**, ensuring that:
 - The application properly **displays questions and answer options**, allowing players to interact with the game.
 - Players can **select answers**, receive feedback, and progress through the quiz.
