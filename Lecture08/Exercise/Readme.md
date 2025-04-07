@@ -36,7 +36,7 @@ The endpoint can be reached here (you need VPN!): http://webp-ilv-backend.cs.tec
 
 ### **Usage Notes**
 - **/registrieren.php**  
-  - Expects a JSON body with keys: `name`, `email`, `password`, `group_id`.  
+  - Expects a "application/x-www-form-urlencoded" data with keys: `name`, `email`, `password`, `group_id`.  
   - Returns `{ "success": boolean, "id": string? }`.
 
 - **/login.php**  
