@@ -1,25 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Memory Game</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="styles.css">  
-</head>
-<body>
-    <div class="container">
-        <h1 class="text-center my-4">Memory Game</h1>
-        <div class="row justify-content-center my-4">
-            <div class="d-flex align-items-center">
-                <!-- Buttons and Input will go here -->
-            </div>
-        </div>
-        <div id="game-board" class="row justify-content-center"></div>
-        <div id="score-board" class="row justify-content-center my-4"></div>
-    </div>  
-    <script type="module" src="dist/index.js"></script>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Memory Game</title>
+        <!-- Bootstrap CSS for styling -->
+        <link
+            rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        />
+        <!-- Custom styles -->
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="text-center my-4">Memory Game</h1>
 
-</div>
-</body>
+            <!-- Game Configuration Panel -->
+            <div class="game-config mb-4">
+                <div class="row">
+                    <!-- Slider to select the number of pairs -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="pairSlider"
+                                >Number of Pairs: <span id="pairValue">4</span></label
+                            >
+                            <input
+                                type="range"
+                                class="form-control-range"
+                                id="pairSlider"
+                                min="2"
+                                max="10"
+                                value="4"
+                            />
+                        </div>
+                    </div>
+                    <!-- Slider to select the number of players -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="playerSlider"
+                                >Number of Players: <span id="playerValue">1</span></label
+                            >
+                            <input
+                                type="range"
+                                class="form-control-range"
+                                id="playerSlider"
+                                min="1"
+                                max="4"
+                                value="1"
+                            />
+                        </div>
+                    </div>
+                    <!-- Buttons to choose the game theme -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Choose Theme:</label>
+                            <div class="btn-group theme-selector">
+                                <button
+                                    class="btn btn-outline-primary theme-btn active"
+                                    data-theme="fruits"
+                                >
+                                    Fruits
+                                </button>
+                                <button
+                                    class="btn btn-outline-primary theme-btn"
+                                    data-theme="animals"
+                                >
+                                    Animals
+                                </button>
+                                <button
+                                    class="btn btn-outline-primary theme-btn"
+                                    data-theme="numbers"
+                                >
+                                    Numbers
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Button to start the game -->
+                <div class="text-center">
+                    <button class="btn btn-primary" id="startGame">Start Game</button>
+                </div>
+            </div>
+
+            <!-- Game Information Section -->
+            <div class="game-info row mb-3">
+                <!-- Displays the current player's turn -->
+                <div class="col-md-4">
+                    <div id="currentPlayer" class="alert alert-info">Player 1's Turn</div>
+                </div>
+                <!-- Scoreboard to display player scores -->
+                <div class="col-md-4">
+                    <div id="scoreboard" class="scoreboard">
+                        <!-- Player scores will be added here -->
+                    </div>
+                </div>
+                <!-- Hint button with remaining hints -->
+                <div class="col-md-4">
+                    <div class="hint-container">
+                        <button id="hintBtn" class="btn btn-warning">
+                            Use Hint (<span id="hintRemaining">3</span> left)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Board Section -->
+            <div id="gameBoard" class="game-board row justify-content-center">
+                <!-- Cards will be dynamically created here -->
+            </div>
+
+            <!-- Section for displaying game messages -->
+            <div id="message" class="text-center mt-4"></div>
+        </div>
+
+        <!-- JavaScript file for game logic -->
+        <script src="dist/index.js"></script>
+    </body>
 </html>

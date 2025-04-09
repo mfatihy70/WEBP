@@ -1,28 +1,150 @@
-body {
-  background-color: #f8f9fa;
+/* Game board styles */
+.game-board {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 800px;
 }
 
-#game-board {
-  display: grid;
-  grid-template-columns: repeat(4, 100px);
-  gap: 10px;
-}
-
+/* Card styles */
 .card {
   width: 100px;
   height: 100px;
-  background-color: #007bff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  color: #fff;
+  margin: 10px;
   cursor: pointer;
-  border-radius: 8px;
-  user-select: none;
+  position: relative;
+  perspective: 1000px;
 }
 
-.matched {
-  background-color: #28a745;
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  backface-visibility: hidden;
+  border-radius: 5px;
+}
+
+.card-front {
+  background-color: #007bff;
+  color: white;
+}
+
+.card-back {
+  background-color: white;
+  color: #333;
+  transform: rotateY(180deg);
+}
+
+/* Matched card styles */
+.card.matched .card-inner {
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+  animation: matched-pulse 1s;
+}
+
+@keyframes matched-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 255, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+  }
+}
+
+/* Hint animation */
+.card.hint .card-inner {
+  animation: hint-pulse 0.5s infinite alternate;
+}
+
+@keyframes hint-pulse {
+  from {
+    box-shadow: 0 0 0 rgba(255, 215, 0, 0.7);
+  }
+  to {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 1);
+  }
+}
+
+/* Active player highlight */
+.active-player {
+  font-weight: bold;
+  background-color: #e9ecef;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border-left: 4px solid #007bff;
+}
+
+/* Game config styles */
+.game-config {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.theme-selector {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Scoreboard styles */
+.scoreboard {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.player-score {
+  padding: 5px;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Hint button container */
+.hint-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Responsive design */
+@media (max-width: 576px) {
+  .card {
+    width: 70px;
+    height: 70px;
+    margin: 5px;
+  }
+
+  .card-front,
+  .card-back {
+    font-size: 2rem;
+  }
+
+  .theme-selector {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
