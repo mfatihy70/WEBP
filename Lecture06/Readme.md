@@ -46,7 +46,7 @@ _class : lead
 
 ---
 
-### Example: Modular architecture for a Quiz Gool
+### Example: Modular architecture for a Quiz Game
 
 #### Components:
 

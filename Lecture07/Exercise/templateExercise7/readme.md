@@ -1,9 +1,9 @@
 # Week 7: Memory Game Refactoring - Task Description
 
 ## **Objective**
-The goal of this exercise is to **enhance and extend the Memory Game** using TypeScript. Each team consists of **2 students**, who will collaborate on improving the game’s structure, features, and user interface.
+The goal of this exercise is to **enhance and extend the Memory Game** using TypeScript. 
 
-Each team can earn **up to 10 points** based on the successful completion of specific tasks.
+You can earn **up to 10 points** based on the successful completion of specific tasks.
 
 ---
 
