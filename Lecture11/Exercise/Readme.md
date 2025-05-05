@@ -1,209 +1,181 @@
-# Week 11 Exercise: Updating Your Angular Messenger with REST Integration
+# Week 11 Exercise: Updating Your Angular Messenger with REST Integration using Signals & Fetch API
 
 ### **Objective**
 
-This week, you will **extend** your Angular Messenger frontend from Week 10 by integrating a **RESTful backend API**. You will dynamically fetch and send messages, handle asynchronous operations using **Observables**, and improve the **user experience** through error handling and UX feedback.
+In this exercise, you will **extend** your Angular Messenger frontend from Week 10 by integrating a **RESTful backend API**, using Angular **signals** and the native **Fetch API**. You will implement login handling, contact selection, dynamic conversations, and message exchange based on a provided mock API. Enhancements like auto-scroll and routing guards improve user experience.
 
-You are working on top of your existing project from Week 10. All changes should extend or replace your current components and service structure.
+This task builds directly on your Week 10 project and replaces or extends specific components.
 
 Total: **7 Points**
 
 ---
 
-## **Update Tasks and Points Overview**
+## **Tasks and Points Overview**
 
-### **1. Add HttpClientModule and MessageService** (1 Point)
+### **1. Replace Mock Data with API Calls (via Fetch + Signals)** (1.5 Points)
 
-* In `app.module.ts`, import `HttpClientModule`:
+* Replace static mock data in `MessageListComponent` and related components with **fetch-based** calls.
+* Replace RxJS/Observable usage with Angular **signals**.
 
-  ```ts
-  import { HttpClientModule } from '@angular/common/http';
+#### Implementation:
 
-  @NgModule({
-    imports: [HttpClientModule],
-  })
-  export class AppModule {}
-  ```
-
-* Generate a service via CLI:
-
-  ```bash
-  ng generate service message
-  ```
-
-* Create the `MessageService` to handle HTTP logic:
+* Use signals to hold state:
 
   ```ts
-  import { Injectable } from '@angular/core';
-  import { HttpClient } from '@angular/common/http';
-  import { Observable } from 'rxjs';
-  import { Message } from '../models/message.model';
-
-  @Injectable({ providedIn: 'root' })
-  export class MessageService {
-    private apiUrl = 'https://your-api-url/messages';
-
-    constructor(private http: HttpClient) {}
-
-    getMessages(): Observable<Message[]> {
-      return this.http.get<Message[]>(this.apiUrl);
-    }
-
-    sendMessage(message: Message): Observable<any> {
-      return this.http.post(this.apiUrl, message);
-    }
-  }
+  readonly messages = signal<Message[]>([]);
+  readonly isLoading = signal(false);
+  readonly errorMessage = signal('');
   ```
 
-* Create an interface `Message` in `src/app/models/message.model.ts`:
+* Replace `ngOnInit()` logic with fetch:
 
   ```ts
-  export interface Message {
-    sender: string;
-    content: string;
-    timestamp?: string;
-  }
+  this.isLoading.set(true);
+  fetch('http://localhost:3000/messages')
+    .then(response => response.json())
+    .then(data => this.messages.set(data))
+    .catch(() => this.errorMessage.set('Failed to load messages'))
+    .finally(() => this.isLoading.set(false));
   ```
 
-### **2. Replace Mock Data with API Calls in MessageListComponent** (2 Points)
-
-* In `MessageListComponent`, inject the new service:
-
-  ```ts
-  constructor(private messageService: MessageService) {}
-  ```
-
-* Replace `messages = [...]` with an empty array and update `ngOnInit()`:
-
-  ```ts
-  messages: Message[] = [];
-  isLoading = false;
-  errorMessage = '';
-
-  ngOnInit(): void {
-    this.isLoading = true;
-    this.messageService.getMessages().subscribe({
-      next: (data) => {
-        this.messages = data;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.errorMessage = 'Failed to load messages';
-        this.isLoading = false;
-      }
-    });
-  }
-  ```
-
-* Update the component template to handle loading and error feedback:
+* Template binds to signals:
 
   ```html
-  <div *ngIf="isLoading">Loading messages...</div>
-  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+  <div *ngIf="isLoading()">Loading...</div>
+  <div *ngIf="errorMessage()">{{ errorMessage() }}</div>
 
-  <div *ngFor="let msg of messages">
+  <div *ngFor="let msg of messages()">
     <strong>{{ msg.sender }}</strong>: {{ msg.content }}
   </div>
   ```
 
-### **3. Add Send Message Functionality** (2 Points)
+### **2. User Login Using Mock AuthService** (1 Point)
 
-* Add an input field and button to `message-list.component.html`:
+* Use provided `AuthService` mock to perform login:
 
-  ```html
-  <input [(ngModel)]="newMessage" placeholder="Type a message" name="message" />
-  <button (click)="sendMessage()" [disabled]="!newMessage.trim()">Send</button>
-  ```
+#### Implementation:
 
-* Implement the `sendMessage()` method in the component:
+* Inject `AuthService` and call:
 
   ```ts
-  newMessage = '';
+  auth.login(username, password);
+  ```
+* Store login state via a signal or localStorage.
+* Implement a **route guard** to redirect to login if not authenticated.
 
-  sendMessage(): void {
-    if (!this.newMessage.trim()) return;
+### **3. Display Contact List & Load Conversations** (2 Points)
 
-    const message: Message = {
-      sender: 'User',
-      content: this.newMessage.trim(),
-      timestamp: new Date().toISOString(),
-    };
+* Show a list of users from mock API (e.g. `GET /users`).
+* On click, load conversation for selected user.
 
-    this.messageService.sendMessage(message).subscribe({
-      next: () => {
-        this.messages.push(message);
-        this.newMessage = '';
-      },
-      error: (err) => {
-        console.error('Send failed', err);
-      }
-    });
+#### Implementation:
+
+* Use signal to store user list:
+
+  ```ts
+  readonly contacts = signal<User[]>([]);
+  ```
+
+* On selection:
+
+  ```ts
+  this.activeUser.set(user);
+  fetch(`/messages?conversationWith=${user.id}`)
+    .then(res => res.json())
+    .then(data => this.messages.set(data));
+  ```
+
+* UI update:
+
+  ```html
+  <ul>
+    <li *ngFor="let user of contacts()" (click)="loadConversation(user)">
+      {{ user.name }}
+    </li>
+  </ul>
+  ```
+
+### **4. Send Message in Active Conversation** (1.5 Points)
+
+* Add input field + send button below current conversation.
+* Send new message via `fetch` and append it immediately to message list.
+
+#### Implementation:
+
+```ts
+sendMessage(): void {
+  const message: Message = {
+    sender: this.auth.username(),
+    content: this.newMessage.trim(),
+    timestamp: new Date().toISOString(),
+  };
+
+  fetch('/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(message),
+  })
+  .then(() => {
+    this.messages.update(msgs => [...msgs, message]);
+    this.newMessage = '';
+    this.scrollToBottom();
+  });
+}
+```
+
+### **5. Implement Refresh Button & Scroll to Bottom** (0.5 Points)
+
+* Add a **refresh button** to manually reload conversation from API.
+* On every message send or load, auto-scroll to bottom:
+
+  ```ts
+  scrollToBottom(): void {
+    setTimeout(() => {
+      const container = document.getElementById('messageContainer');
+      if (container) container.scrollTop = container.scrollHeight;
+    }, 0);
   }
   ```
 
-* Ensure the form is cleared after sending and the button is disabled when empty.
+### **6. Add Routing Guard for Login** (0.5 Points)
 
-### **4. Add Loading and Error Feedback** (1.5 Points)
-
-* Ensure proper states are managed:
-
-  ```ts
-  isLoading = false;
-  errorMessage = '';
-  ```
-
-* In the template:
-
-  ```html
-  <div *ngIf="isLoading">Loading messages...</div>
-  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
-  ```
-
-* Optionally disable the send button during submission or show a spinner/icon.
-
-* Use `*ngIf` to hide the message list during loading.
-
-### **5. Keep Your Code Modular and Clean** (0.5 Points)
-
-* Move all API interaction to the `MessageService`.
-* Use the `Message` interface consistently.
-* Folder structure recommendation:
-
-  * `src/app/models/message.model.ts`
-  * `src/app/services/message.service.ts`
-  * `src/app/message/message-list/message-list.component.ts`
+* Automatically redirect unauthenticated users to `/login`.
+* Optional: add persistent session logic (e.g. use localStorage).
 
 ---
 
 ## **Total Points Available: 7**
 
-| Task                                  | Max Points |
-| ------------------------------------- | ---------- |
-| Add HttpClientModule & MessageService | 1          |
-| Replace Mock Data with API Calls      | 2          |
-| Send Messages via Service             | 2          |
-| Error Handling & UX Feedback          | 1.5        |
-| Modular Code Structure                | 0.5        |
+| Task                                 | Max Points |
+| ------------------------------------ | ---------- |
+| Fetch & Signals for Loading Messages | 1.5        |
+| Login with Mock AuthService          | 1          |
+| Contact List & Conversations         | 2          |
+| Send Messages via API                | 1.5        |
+| Refresh + Auto Scroll                | 0.5        |
+| Routing Guard for Auth               | 0.5        |
 
 ---
 
 ## **Submission Requirements**
 
-* Use your existing project from Week 10 as a base.
-* All mock data should be replaced with real API communication.
-* Messages are loaded and sent via API using proper Angular services.
-* Basic loading indicators and error handling must be implemented.
-* Code is clean, modular, and maintainable.
+* Continue in your Week 10 `messenger-frontend` project.
+* Replace observable logic with **signals**.
+* Use **native fetch API** for backend communication.
+* Auth logic must follow the provided mock `AuthService` example.
+* Contact selection triggers conversation updates.
+* Sending messages uses API + immediately appends locally.
+* App includes refresh button and scroll-to-latest behavior.
+* Route protection redirects unauthenticated users to login.
 
 ---
 
 ## **Optional Enhancements**
 
-* Show timestamps in the UI (e.g. with `DatePipe`).
-* Auto-scroll to the latest message after sending.
-* Add "user is typing" indicators.
-* Use Angular Material or Bootstrap for improved styling.
+* Mark unread messages.
+* Show typing indicators.
+* Use Angular animations for transitions.
 
 ---
 
-**You are now connecting your frontend to the real world — great job! 🚀**
+**Your messenger is going real-time — well done! 🚀**
