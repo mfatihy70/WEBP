@@ -1,183 +1,194 @@
-﻿import { ApiService } from "./ApiService.js"
+﻿// src/ChatUI.ts
+
+import { ApiService } from "./ApiService.js"
 import { StateManager } from "./StateManager.js"
-import type { User, ApiResponse } from "./ApiService.js"
 
 export class ChatUI {
+  private currentReceiverId: string | null = null
+
   constructor() {
-    this.initEventListeners()
+    this.renderUI() // Render the initial UI from the template
+    this.initEventListeners() // Initialize event listeners for user interactions
+  }
+
+  private renderUI() {
+    // Load the chat app template and inject it into the document body
+    const template = document.getElementById(
+      "chatAppTemplate"
+    ) as HTMLTemplateElement
+    if (template) {
+      document.body.innerHTML = template.innerHTML
+    } else {
+      console.error("Chat app template not found")
+    }
   }
 
   private initEventListeners() {
-    // 1) Registration
-    const regForm = document.getElementById("registerForm")
-    if (regForm) {
-      regForm.addEventListener("submit", (event) => this.handleRegister(event))
-    }
-
-    // 2) Login
-    const loginForm = document.getElementById("loginForm")
-    if (loginForm) {
-      loginForm.addEventListener("submit", (event) => this.handleLogin(event))
-    }
-
-    // 3) Get Users
-    const loadUsersBtn = document.getElementById("loadUsersBtn")
-    if (loadUsersBtn) {
-      loadUsersBtn.addEventListener("click", () => this.handleGetUsers())
-    }
-
-    // 4) Send Message
-    const sendForm = document.getElementById("sendForm")
-    if (sendForm) {
-      sendForm.addEventListener("submit", (event) =>
-        this.handleSendMessage(event)
-      )
-    }
+    // Attach event listeners to various UI elements
+    document
+      .getElementById("registerForm")
+      ?.addEventListener("submit", (e) => this.handleRegister(e)) // Handle user registration
+    document
+      .getElementById("loginForm")
+      ?.addEventListener("submit", (e) => this.handleLogin(e)) // Handle user login
+    document
+      .getElementById("refreshUsers")
+      ?.addEventListener("click", () => this.handleGetUsers()) // Refresh the list of users
+    document
+      .getElementById("chatForm")
+      ?.addEventListener("submit", (e) => this.handleChatSend(e)) // Send a chat message
   }
 
   private async handleRegister(event: Event) {
     event.preventDefault()
-    const regResultDiv = document.getElementById("registerResult")
-
-    const name = (
-      document.getElementById("regName") as HTMLInputElement
-    ).value.trim()
-    const email = (
-      document.getElementById("regEmail") as HTMLInputElement
-    ).value.trim()
-    const pass = (
-      document.getElementById("regPass") as HTMLInputElement
-    ).value.trim()
-    const group = (
-      document.getElementById("regGroup") as HTMLInputElement
-    ).value.trim()
+    const resultDiv = document.getElementById("registerResult")!
+    resultDiv.textContent = "Registering..." // Show a loading message
 
     try {
-      if (regResultDiv) regResultDiv.textContent = "Registering ..."
-      const response = await ApiService.registerUser(name, email, pass, group)
+      // Call the API to register a new user
+      const response = await ApiService.registerUser(
+        (document.getElementById("regName") as HTMLInputElement).value,
+        (document.getElementById("regEmail") as HTMLInputElement).value,
+        (document.getElementById("regPass") as HTMLInputElement).value,
+        (document.getElementById("regGroup") as HTMLInputElement).value
+      )
 
       if (response.success) {
-        if (regResultDiv) {
-          regResultDiv.textContent = `Registration successful! New user ID: ${response.id}`
-        }
-        // Optionally reset form
-        ;(event.target as HTMLFormElement).reset()
+        resultDiv.textContent = `Registered! User ID: ${response.id}` // Show success message
+        ;(event.target as HTMLFormElement).reset() // Reset the form
       } else {
-        if (regResultDiv) {
-          regResultDiv.textContent = `Registration failed: ${
-            response.error || "Unknown error"
-          }`
-        }
+        resultDiv.textContent = `Error: ${
+          response.error || "Registration failed"
+        }` // Show error message
       }
     } catch (err) {
-      console.error("handleRegister Error:", err)
-      if (regResultDiv) regResultDiv.textContent = "Network or server error."
+      resultDiv.textContent = "Network error" // Handle network errors
+      console.error(err)
     }
   }
 
   private async handleLogin(event: Event) {
     event.preventDefault()
-    const loginResultDiv = document.getElementById("loginResult")
-
-    const usernameOrEmail = (
-      document.getElementById("loginUser") as HTMLInputElement
-    ).value.trim()
-    const password = (
-      document.getElementById("loginPass") as HTMLInputElement
-    ).value.trim()
+    const resultDiv = document.getElementById("loginResult")!
+    resultDiv.textContent = "Logging in..." // Show a loading message
 
     try {
-      if (loginResultDiv) loginResultDiv.textContent = "Logging in ..."
-      const response = await ApiService.loginUser(usernameOrEmail, password)
-      if (response.token) {
-        // Save the token in StateManager
-        StateManager.setToken(response.token)
+      // Call the API to log in the user
+      const response = await ApiService.loginUser(
+        (document.getElementById("loginUser") as HTMLInputElement).value,
+        (document.getElementById("loginPass") as HTMLInputElement).value
+      )
 
-        if (loginResultDiv) {
-          loginResultDiv.textContent = `Login successful! Token: ${response.token}`
-        }
-        ;(event.target as HTMLFormElement).reset()
+      if (response.token) {
+        StateManager.setToken(response.token) // Save the token in the state manager
+        resultDiv.textContent = "Login successful!" // Show success message
+        ;(event.target as HTMLFormElement).reset() // Reset the form
+        document.getElementById("chatApp")!.style.display = "flex" // Show the chat app UI
+        this.handleGetUsers() // Load the list of users
       } else {
-        if (loginResultDiv) {
-          loginResultDiv.textContent = `Login failed: ${
-            response.error || "Unknown error"
-          }`
-        }
+        resultDiv.textContent = `Error: ${response.error || "Login failed"}` // Show error message
       }
     } catch (err) {
-      console.error("handleLogin Error:", err)
-      if (loginResultDiv)
-        loginResultDiv.textContent = "Network or server error."
+      resultDiv.textContent = "Network error" // Handle network errors
+      console.error(err)
     }
   }
 
   private async handleGetUsers() {
-    const usersList = document.getElementById("usersList")
-    if (usersList) usersList.innerHTML = "Loading users..."
+    const usersList = document.getElementById("usersList")!
+    usersList.innerHTML = "Loading users..." // Show a loading message
 
     try {
+      // Call the API to fetch the list of users
       const data = await ApiService.getUsers()
-      // data can be either an array of User or an {error: string}
       if (Array.isArray(data)) {
-        // success
-        if (usersList) {
-          usersList.innerHTML = ""
-          data.forEach((user: User) => {
-            const li = document.createElement("li")
-            li.textContent = `User: ${user.name} (ID: ${user.id}), group: ${user.group_id}`
-            usersList.appendChild(li)
-          })
-        }
+        usersList.innerHTML = "" // Clear the users list
+        data.forEach((user) => {
+          // Create a list item for each user
+          const li = document.createElement("li")
+          li.className = "user-item"
+          li.innerHTML = `
+            <span class="user-name">${user.name}</span>
+            <span class="user-id">(ID: ${user.id})</span>
+            <span class="user-group">Group ${user.group_id}</span>
+          `
+          li.addEventListener("click", () => this.loadConversation(user.id)) // Load conversation on click
+          usersList.appendChild(li)
+        })
       } else {
-        // data is an object with `error` property
-        if (usersList) {
-          usersList.innerHTML = `Error: ${data.error}`
-        }
+        usersList.innerHTML = `Error: ${data.error || "Failed to load users"}` // Show error message
       }
     } catch (err) {
-      console.error("handleGetUsers Error:", err)
-      if (usersList)
-        usersList.innerHTML = "Network or server error while loading users."
+      usersList.innerHTML = "Network error" // Handle network errors
+      console.error(err)
     }
   }
 
-  private async handleSendMessage(event: Event) {
-    event.preventDefault()
-    const sendResultDiv = document.getElementById("sendResult")
-
-    const senderId = (
-      document.getElementById("senderId") as HTMLInputElement
-    ).value.trim()
-    const receiverId = (
-      document.getElementById("receiverId") as HTMLInputElement
-    ).value.trim()
-    const message = (
-      document.getElementById("messageText") as HTMLInputElement
-    ).value.trim()
+  private async loadConversation(receiverId: string) {
+    this.currentReceiverId = receiverId
+    const chatMessages = document.getElementById("chat-messages")!
+    chatMessages.innerHTML = "Loading conversation..." // Show a loading message
 
     try {
-      if (sendResultDiv) sendResultDiv.textContent = "Sending message ..."
-      const response = await ApiService.sendMessage(
-        senderId,
-        receiverId,
-        message
-      )
-      if (response.success) {
-        if (sendResultDiv)
-          sendResultDiv.textContent = "Message successfully sent!"
-        ;(event.target as HTMLFormElement).reset()
+      const currentUserId = ApiService.getRegisteredUserId()
+      if (!currentUserId) {
+        chatMessages.innerHTML = "Please login first" // Ensure the user is logged in
+        return
+      }
+
+      // Call the API to fetch the conversation
+      const data = await ApiService.getConversation(currentUserId, receiverId)
+      if (Array.isArray(data)) {
+        chatMessages.innerHTML = "" // Clear the chat messages
+        data.forEach((msg) => {
+          // Create a message element for each message
+          const isSent = msg.sender_id === currentUserId
+          const messageDiv = document.createElement("div")
+          messageDiv.className = `chat-message ${isSent ? "sent" : "received"}`
+          messageDiv.textContent = msg.message
+          chatMessages.appendChild(messageDiv)
+        })
+        chatMessages.scrollTop = chatMessages.scrollHeight // Scroll to the bottom of the chat
       } else {
-        if (sendResultDiv) {
-          sendResultDiv.textContent = `Error: ${
-            response.error || "Unknown error"
-          }`
-        }
+        chatMessages.innerHTML = `Error: ${
+          data.error || "Failed to load conversation"
+        }` // Show error message
       }
     } catch (err) {
-      console.error("handleSendMessage Error:", err)
-      if (sendResultDiv)
-        sendResultDiv.textContent =
-          "Network or server error while sending message."
+      chatMessages.innerHTML = "Network error" // Handle network errors
+      console.error(err)
+    }
+  }
+
+  private async handleChatSend(event: Event) {
+    event.preventDefault()
+    const input = document.getElementById("chatInput") as HTMLInputElement
+    const message = input.value.trim()
+    if (!message || !this.currentReceiverId) return // Ensure a message and receiver are present
+
+    try {
+      const currentUserId = ApiService.getRegisteredUserId()
+      if (!currentUserId) {
+        alert("Please login first") // Ensure the user is logged in
+        return
+      }
+
+      // Call the API to send the message
+      const response = await ApiService.sendMessage(
+        currentUserId,
+        this.currentReceiverId,
+        message
+      )
+
+      if (response.success) {
+        input.value = "" // Clear the input field
+        this.loadConversation(this.currentReceiverId) // Reload the conversation
+      } else {
+        alert(`Error: ${response.error || "Failed to send message"}`) // Show error message
+      }
+    } catch (err) {
+      alert("Network error") // Handle network errors
+      console.error(err)
     }
   }
 }

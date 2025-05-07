@@ -1,88 +1,101 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Metadata and title for the document -->
     <meta charset="UTF-8" />
-    <title>Week 8: TypeScript Messenger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TypeScript Messenger</title>
+    <!-- Link to external stylesheet -->
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <h1>TypeScript Messenger (Week 8)</h1>
+    <!-- Template for the chat application -->
+    <template id="chatAppTemplate">
+      <div class="container">
+        <!-- Application title -->
+        <h1>TypeScript Messenger</h1>
 
-    <!-- 1) Register Form -->
-    <section>
-      <h2>Register (Task 1)</h2>
-      <form id="registerForm">
-        <label for="regName">Name: </label>
-        <input type="text" id="regName" required /><br />
+        <!-- Authentication section -->
+        <div class="auth-section">
+          <!-- Registration form -->
+          <div class="auth-form">
+            <h2>Register</h2>
+            <form id="registerForm">
+              <!-- Input fields for registration -->
+              <input type="text" id="regName" placeholder="Name" required />
+              <input type="email" id="regEmail" placeholder="Email" required />
+              <input
+                type="password"
+                id="regPass"
+                placeholder="Password"
+                required
+              />
+              <input
+                type="number"
+                id="regGroup"
+                placeholder="Group ID"
+                required
+              />
+              <!-- Submit button for registration -->
+              <button type="submit">Register</button>
+            </form>
+            <!-- Placeholder for registration result -->
+            <div id="registerResult"></div>
+          </div>
 
-        <label for="regEmail">Email: </label>
-        <input type="email" id="regEmail" required /><br />
+          <!-- Login form -->
+          <div class="auth-form">
+            <h2>Login</h2>
+            <form id="loginForm">
+              <!-- Input fields for login -->
+              <input
+                type="text"
+                id="loginUser"
+                placeholder="Username/Email"
+                required
+              />
+              <input
+                type="password"
+                id="loginPass"
+                placeholder="Password"
+                required
+              />
+              <!-- Submit button for login -->
+              <button type="submit">Login</button>
+            </form>
+            <!-- Placeholder for login result -->
+            <div id="loginResult"></div>
+          </div>
+        </div>
 
-        <label for="regPass">Password: </label>
-        <input type="password" id="regPass" required /><br />
-
-        <label for="regGroup">Group ID: </label>
-        <input type="number" id="regGroup" required /><br />
-
-        <button type="submit">Register</button>
-      </form>
-      <div id="registerResult"></div>
-    </section>
-
-    <hr />
-
-    <!-- 2) Login Form -->
-    <section>
-      <h2>Login (Task 2)</h2>
-      <form id="loginForm">
-        <label for="loginUser">Username/Email: </label>
-        <input type="text" id="loginUser" required /><br />
-
-        <label for="loginPass">Password: </label>
-        <input type="password" id="loginPass" required /><br />
-
-        <button type="submit">Login</button>
-      </form>
-      <div id="loginResult"></div>
-    </section>
-
-    <hr />
-
-    <!-- 3) Load Users -->
-    <section>
-      <h2>Get Users (Task 3)</h2>
-      <button id="loadUsersBtn">Load Users</button>
-      <ul id="usersList"></ul>
-    </section>
-
-    <hr />
-
-    <!-- 4) Send Message -->
-    <section>
-      <h2>Send Message (Task 4)</h2>
-      <form id="sendForm">
-        <label for="senderId">Sender ID: </label>
-        <input type="text" id="senderId" required /><br />
-
-        <label for="receiverId">Receiver ID: </label>
-        <input type="text" id="receiverId" required /><br />
-
-        <label for="messageText">Message: </label>
-        <input type="text" id="messageText" required /><br />
-
-        <button type="submit">Send</button>
-      </form>
-      <div id="sendResult"></div>
-    </section>
-
-    <!-- Script references – could be a bundled file or separate transpiled modules -->
+        <!-- Chat application section (hidden by default) -->
+        <div class="chat-app" id="chatApp" style="display: none">
+          <!-- User list section -->
+          <div class="user-list-container">
+            <h2>Users <button id="refreshUsers">Refresh</button></h2>
+            <!-- List of users -->
+            <ul id="usersList" class="user-list"></ul>
+          </div>
+          <!-- Chat window section -->
+          <div class="chat-window">
+            <!-- Chat messages container -->
+            <div id="chat-messages" class="chat-messages"></div>
+            <!-- Chat input form -->
+            <form id="chatForm" class="chat-form">
+              <input
+                type="text"
+                id="chatInput"
+                placeholder="Type your message..."
+                required
+              />
+              <!-- Submit button for sending messages -->
+              <button type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </template>
+    <!-- Link to the main JavaScript module -->
     <script type="module" src="dist/main.js"></script>
-    <!-- 
-    If not bundling, you might have something like:
-    <script type="module" src="../dist/ChatUI.js"></script>
-    <script type="module">
-      import { ChatUI } from '../dist/ChatUI.js';
-      new ChatUI();
-    </script>
-  --></body>
+  </body>
 </html>

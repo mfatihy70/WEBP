@@ -1,4 +1,6 @@
-﻿import type { User } from "./ApiService.js"
+﻿// src/StateManager.ts
+
+import type { User } from "./ApiService.js"
 
 export class StateManager {
   private static _token: string | null = null

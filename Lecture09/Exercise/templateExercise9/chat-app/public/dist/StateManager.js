@@ -1,3 +1,4 @@
+// src/StateManager.ts
 export class StateManager {
     static setToken(token) {
         this._token = token;
