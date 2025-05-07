@@ -1,0 +1,37 @@
+[
+    {
+      "category": "Science",
+      "question": "What is the chemical symbol for gold?",
+      "options": ["Au", "Ag", "Fe", "Hg"],
+      "answer": "Au",
+      "difficulty": "easy"
+    },
+    {
+      "category": "History",
+      "question": "In which year did World War II end?",
+      "options": [1943, 1944, 1945, 1946],
+      "answer": 1945,
+      "difficulty": "medium"
+    },
+    {
+      "category": "Geography",
+      "question": "What is the capital of France?",
+      "options": ["Berlin", "Madrid", "Paris", "Rome"],
+      "answer": "Paris",
+      "difficulty": "easy"
+    },
+    {
+      "category": "Literature",
+      "question": "Who wrote 'Pride and Prejudice'?",
+      "options": ["Jane Austen", "Charles Dickens", "Mark Twain", "Ernest Hemingway"],
+      "answer": "Jane Austen",
+      "difficulty": "medium"
+    },
+    {
+      "category": "Mathematics",
+      "question": "What is the value of pi to two decimal places?",
+      "options": [3.12, 3.14, 3.16, 3.18],
+      "answer": 3.14,
+      "difficulty": "easy"
+    }
+  ]

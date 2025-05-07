@@ -1,5 +1,3 @@
-// index.ts - Main TypeScript file for the Memory Game
-
 // Interfaces
 interface Card {
   id: number // Unique identifier for the card
@@ -357,7 +355,7 @@ class MemoryGame {
   }
 
   public useHint(): void {
-    // Use a hint to briefly show two unmatched cards
+    // Use a hint to briefly show two matched cards
     if (this.hintsRemaining <= 0 || this.gameState !== GameState.WAITING) {
       return
     }
@@ -372,10 +370,29 @@ class MemoryGame {
       (card) => !card.isMatched && !card.isFlipped
     )
 
-    if (unmatchedCards.length >= 2) {
-      // Show hints for 1 second
-      const hintCards = unmatchedCards.slice(0, 2)
+    // Group cards by their value/image to find pairs
+    const cardGroups = new Map<string, any[]>()
 
+    unmatchedCards.forEach((card) => {
+      const value = card.symbol
+      if (!cardGroups.has(value)) {
+        cardGroups.set(value, [])
+      }
+      cardGroups.get(value)!.push(card)
+    })
+
+    // Find the first group that has at least 2 cards (a matching pair)
+    let hintCards: any[] = []
+
+    for (const [_, cards] of cardGroups) {
+      if (cards.length >= 2) {
+        hintCards = cards.slice(0, 2)
+        break
+      }
+    }
+
+    // If we found a pair, show them as hints
+    if (hintCards.length === 2) {
       // Show cards briefly
       hintCards.forEach((card) => {
         const cardElement = document.querySelector(

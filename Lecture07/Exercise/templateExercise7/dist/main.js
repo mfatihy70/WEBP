@@ -1,5 +1,4 @@
 "use strict";
-// index.ts - Main TypeScript file for the Memory Game
 // Enums
 var GameTheme;
 (function (GameTheme) {
@@ -285,7 +284,7 @@ class MemoryGame {
         document.getElementById("message").innerHTML = `<h3>🎉 Game Over! 🎉</h3><p>${message}</p>`;
     }
     useHint() {
-        // Use a hint to briefly show two unmatched cards
+        // Use a hint to briefly show two matched cards
         if (this.hintsRemaining <= 0 || this.gameState !== GameState.WAITING) {
             return;
         }
@@ -293,9 +292,25 @@ class MemoryGame {
         document.getElementById("hintRemaining").textContent = `${this.hintsRemaining}`;
         // Find unmatched cards
         const unmatchedCards = this.cards.filter((card) => !card.isMatched && !card.isFlipped);
-        if (unmatchedCards.length >= 2) {
-            // Show hints for 1 second
-            const hintCards = unmatchedCards.slice(0, 2);
+        // Group cards by their value/image to find pairs
+        const cardGroups = new Map();
+        unmatchedCards.forEach((card) => {
+            const value = card.symbol;
+            if (!cardGroups.has(value)) {
+                cardGroups.set(value, []);
+            }
+            cardGroups.get(value).push(card);
+        });
+        // Find the first group that has at least 2 cards (a matching pair)
+        let hintCards = [];
+        for (const [_, cards] of cardGroups) {
+            if (cards.length >= 2) {
+                hintCards = cards.slice(0, 2);
+                break;
+            }
+        }
+        // If we found a pair, show them as hints
+        if (hintCards.length === 2) {
             // Show cards briefly
             hintCards.forEach((card) => {
                 const cardElement = document.querySelector(`.card[data-id="${card.id}"]`);
