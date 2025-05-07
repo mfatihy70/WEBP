@@ -1,6 +1,4 @@
-﻿// src/ApiService.ts
-
-export interface ApiResponse {
+﻿export interface ApiResponse {
   success?: boolean
   error?: string
   id?: string
@@ -30,9 +28,6 @@ export class ApiService {
     return this.registeredUserId
   }
 
-  // ---------------------------------------------
-  // 1) Register a new user
-  // ---------------------------------------------
   static async registerUser(
     name: string,
     email: string,
@@ -62,9 +57,6 @@ export class ApiService {
     return data
   }
 
-  // ---------------------------------------------
-  // 2) Login
-  // ---------------------------------------------
   static async loginUser(
     usernameOrEmail: string,
     password: string
@@ -94,11 +86,6 @@ export class ApiService {
     return data
   }
 
-  // ---------------------------------------------
-  // 3) Get Users
-  // ---------------------------------------------
-  // Inside ApiService class
-
   static async getUsers(): Promise<User[] | { error?: string }> {
     // Build the query params conditionally
     const params: string[] = []
@@ -123,9 +110,6 @@ export class ApiService {
     return resp.json()
   }
 
-  // ---------------------------------------------
-  // 4) Send Message
-  // ---------------------------------------------
   static async sendMessage(
     senderId: string,
     receiverId: string,
@@ -146,6 +130,34 @@ export class ApiService {
       method: "POST",
       body: formData,
     })
+    return resp.json()
+  }
+
+  static async getConversation(
+    token: string | null,
+    user1Id: string,
+    user2Id: string
+  ): Promise<
+    | {
+        sender_id: string
+        receiver_id: string
+        message: string
+        timestamp: number
+      }[]
+    | { error?: string }
+  > {
+    const params = new URLSearchParams()
+
+    params.append("token", token || "")
+    params.append("user1_id", user1Id)
+    params.append("user2_id", user2Id)
+
+    const url = `${BASE_URL}/get_conversation.php?${params.toString()}`
+
+    const resp = await fetch(url, {
+      method: "GET",
+    })
+
     return resp.json()
   }
 }

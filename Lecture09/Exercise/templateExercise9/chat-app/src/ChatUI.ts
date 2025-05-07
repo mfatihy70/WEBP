@@ -1,6 +1,4 @@
-﻿// src/ChatUI.ts
-
-import { ApiService } from "./ApiService.js"
+﻿import { ApiService } from "./ApiService.js"
 import { StateManager } from "./StateManager.js"
 import type { User, ApiResponse } from "./ApiService.js"
 
@@ -37,9 +35,6 @@ export class ChatUI {
     }
   }
 
-  // --------------------------------------------------------------------------
-  // Task 1: Handle Register
-  // --------------------------------------------------------------------------
   private async handleRegister(event: Event) {
     event.preventDefault()
     const regResultDiv = document.getElementById("registerResult")
@@ -80,9 +75,6 @@ export class ChatUI {
     }
   }
 
-  // --------------------------------------------------------------------------
-  // Task 2: Handle Login
-  // --------------------------------------------------------------------------
   private async handleLogin(event: Event) {
     event.preventDefault()
     const loginResultDiv = document.getElementById("loginResult")
@@ -119,9 +111,6 @@ export class ChatUI {
     }
   }
 
-  // --------------------------------------------------------------------------
-  // Task 3: Get Users
-  // --------------------------------------------------------------------------
   private async handleGetUsers() {
     const usersList = document.getElementById("usersList")
     if (usersList) usersList.innerHTML = "Loading users..."
@@ -152,9 +141,6 @@ export class ChatUI {
     }
   }
 
-  // --------------------------------------------------------------------------
-  // Task 4: Send Message
-  // --------------------------------------------------------------------------
   private async handleSendMessage(event: Event) {
     event.preventDefault()
     const sendResultDiv = document.getElementById("sendResult")
