@@ -12,7 +12,7 @@ Total: **7 Points**
 
 ## **Tasks and Points Overview**
 
-### **1. Replace Mock Data with API Calls (via Fetch + Signals)** (1.5 Points)
+### **1. Replace Mock Data with API Calls (via Fetch + Signals)**
 
 * Replace static mock data in `MessageListComponent` and related components with **fetch-based** calls.
 * Replace RxJS/Observable usage with Angular **signals**.
@@ -49,7 +49,7 @@ Total: **7 Points**
   </div>
   ```
 
-### **2. User Login Using Mock AuthService** (1 Point)
+### **2. User Login Using Mock AuthService**
 
 * Use provided `AuthService` mock to perform login:
 
@@ -63,7 +63,7 @@ Total: **7 Points**
 * Store login state via a signal or localStorage.
 * Implement a **route guard** to redirect to login if not authenticated.
 
-### **3. Display Contact List & Load Conversations** (2 Points)
+### **3. Display Contact List & Load Conversations**
 
 * Show a list of users from mock API (e.g. `GET /users`).
 * On click, load conversation for selected user.
@@ -95,7 +95,7 @@ Total: **7 Points**
   </ul>
   ```
 
-### **4. Send Message in Active Conversation** (1.5 Points)
+### **4. Send Message in Active Conversation**
 
 * Add input field + send button below current conversation.
 * Send new message via `fetch` and append it immediately to message list.
@@ -123,7 +123,7 @@ sendMessage(): void {
 }
 ```
 
-### **5. Implement Refresh Button & Scroll to Bottom** (0.5 Points)
+### **5. Implement Refresh Button & Scroll to Bottom**
 
 * Add a **refresh button** to manually reload conversation from API.
 * On every message send or load, auto-scroll to bottom:
@@ -146,14 +146,13 @@ sendMessage(): void {
 
 ## **Total Points Available: 7**
 
-| Task                                 | Max Points |
-| ------------------------------------ | ---------- |
-| Fetch & Signals for Loading Messages | 1.5        |
-| Login with Mock AuthService          | 1          |
-| Contact List & Conversations         | 2          |
-| Send Messages via API                | 1.5        |
-| Refresh + Auto Scroll                | 0.5        |
-| Routing Guard for Auth               | 0.5        |
+| Task                                                   | Max Points |
+| ------------------------------------------------------ | ---------- |
+| Login with Mock AuthService                            | 1          |
+| Contact List & Conversations  + Send Message via API   | 4          |
+| Refresh + Auto Scroll + Routing Guard for Auth         | 2          |
+| Fetch & Signals for Loading Messages                   | 3          |
+
 
 ---
 
