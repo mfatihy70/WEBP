@@ -1,0 +1,8 @@
+<h2>Messages</h2>
+<ul class="message-list">
+  <li *ngFor="let msg of messages" class="message-item">
+    <span class="message-author">{{ msg.sender }}</span
+    >:
+    <span class="message-content">{{ msg.content }}</span>
+  </li>
+</ul>

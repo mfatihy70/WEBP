@@ -1,0 +1,40 @@
+/* Styles for the message list component */
+
+.message-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.message-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.message-item:last-child {
+  border-bottom: none;
+}
+
+.message-author {
+  font-weight: bold;
+  margin-right: 8px;
+  color: #1976d2;
+}
+
+.message-content {
+  flex: 1;
+  color: #333;
+  word-break: break-word;
+}
+
+.message-time {
+  font-size: 0.85em;
+  color: #888;
+  margin-left: 12px;
+}
